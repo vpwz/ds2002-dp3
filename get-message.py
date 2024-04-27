@@ -5,8 +5,9 @@ import json
 import pprint
 
 # Set up your SQS queue URL and boto3 client
-url = "https://sqs.us-east-1.amazonaws.com/440848399208/qnd8mu"
+url = "https://sqs.us-east-1.amazonaws.com/440848399208/nem2p"
 sqs = boto3.client('sqs')
+messages = {}
 
 def delete_message(handle):
     try:
@@ -20,7 +21,7 @@ def delete_message(handle):
         print(e.response['Error']['Message'])
 
 def get_message():
-    messages = {}
+    
     for i in range(10):
         try:
             # Receive message from SQS queue. Each message has two MessageAttributes: order and word
@@ -47,6 +48,7 @@ def get_message():
                 
                 messages[order] = word
                 
+                # delete_message(handle)
 
                 # Print the message attributes - this is what you want to work with to reassemble the message
                 print(f"Order: {order}")
@@ -55,23 +57,26 @@ def get_message():
             # If there is no message in the queue, print a message and exit    
             else:
                 print("No message in the queue")
-                print("Unsorted Values!")
-                pprint.pprint(messages)
-                sorted_messages = {k: messages[k] for k in sorted(messages, key=lambda k: str(k))}
-                return sorted_messages
-                # break
+                
+                break
                 # exit(1)
                 
         # Handle any errors that may occur connecting to SQS
         except ClientError as e:
             print(e.response['Error']['Message'])
+            
+    print("Unsorted Values!") #print unsorted dictionary
+    pprint.pprint(messages)
+    sorted_messages = {k: messages[k] for k in sorted(messages, key=lambda k: str(k))}
+    return sorted_messages
+    
     
 
 # Trigger the function
 if __name__ == "__main__":
+    contents = get_message() #gets sorted dictionary
     
-    contents = get_message()  
-    print("Final Values!")  #gets sorted dictionary
+    print("Final Values!")   #print sorted dictionary
     pprint.pprint(contents)
     
     print("Complete Sentence:") #prints out the complete sentence
