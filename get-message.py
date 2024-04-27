@@ -20,7 +20,7 @@ def delete_message(handle):
         print(e.response['Error']['Message'])
 
 def get_message():
-    messages = []
+    messages = {}
     for i in range(10):
         try:
             # Receive message from SQS queue. Each message has two MessageAttributes: order and word
@@ -36,8 +36,7 @@ def get_message():
                 ],
                 
             )
-            # Check if there is a message in the queue or not
-            print(len(response))
+            
             if "Messages" in response:
                 
                 # extract the two message attributes you want to use as variables
@@ -46,8 +45,7 @@ def get_message():
                 word = response['Messages'][0]['MessageAttributes']['word']['StringValue']
                 handle = response['Messages'][0]['ReceiptHandle']
                 
-                message_dict = {order: word}
-                messages.append(message_dict)
+                messages[order] = word
                 
 
                 # Print the message attributes - this is what you want to work with to reassemble the message
@@ -57,8 +55,11 @@ def get_message():
             # If there is no message in the queue, print a message and exit    
             else:
                 print("No message in the queue")
+                print("Unsorted Values!")
                 pprint.pprint(messages)
-                break
+                sorted_messages = {k: messages[k] for k in sorted(messages, key=lambda k: str(k))}
+                return sorted_messages
+                # break
                 # exit(1)
                 
         # Handle any errors that may occur connecting to SQS
@@ -69,5 +70,11 @@ def get_message():
 # Trigger the function
 if __name__ == "__main__":
     
-    get_message()
+    contents = get_message()  
+    print("Final Values!")  #gets sorted dictionary
+    pprint.pprint(contents)
+    
+    print("Complete Sentence:") #prints out the complete sentence
+    for key in sorted(contents):
+        print(contents[key], end = " ")
     
