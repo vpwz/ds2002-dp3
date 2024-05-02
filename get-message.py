@@ -5,7 +5,7 @@ import json
 import pprint
 
 # Set up your SQS queue URL and boto3 client
-url = "https://sqs.us-east-1.amazonaws.com/440848399208/nem2p"
+url = "https://sqs.us-east-1.amazonaws.com/440848399208/qnd8mu"
 sqs = boto3.client('sqs')
 messages = {}
 
@@ -31,7 +31,7 @@ def get_message():
                 AttributeNames=[
                     'All'
                 ],
-                
+                # MaxNumberOfMessages = 10,  
                 MessageAttributeNames=[
                     'All'
                 ],
@@ -48,7 +48,7 @@ def get_message():
                 
                 messages[order] = word
                 
-                # delete_message(handle)
+                delete_message(handle)
 
                 # Print the message attributes - this is what you want to work with to reassemble the message
                 print(f"Order: {order}")
@@ -67,7 +67,7 @@ def get_message():
             
     print("Unsorted Values!") #print unsorted dictionary
     pprint.pprint(messages)
-    sorted_messages = {k: messages[k] for k in sorted(messages, key=lambda k: str(k))}
+    sorted_messages = {k: messages[k] for k in sorted(messages, key=lambda k: str(k))} #sort messages
     return sorted_messages
     
     
